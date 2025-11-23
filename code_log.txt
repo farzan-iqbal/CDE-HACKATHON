@@ -1,0 +1,25 @@
+[2025-11-23 02:40:55] Batch extraction started...
+[2025-11-23 02:40:55] Starting scrape for: Automobiles
+[2025-11-23 02:41:41] Found 60 items in Automobiles
+[2025-11-23 02:41:44] Starting scrape for: Electronics
+[2025-11-23 02:42:07] Found 60 items in Electronics
+[2025-11-23 02:42:09] Starting scrape for: Lights
+[2025-11-23 02:42:35] Found 60 items in Lights
+[2025-11-23 02:42:37] Starting scrape for: Sports
+[2025-11-23 02:43:02] Found 60 items in Sports
+[2025-11-23 02:43:04] Starting scrape for: Mobile
+[2025-11-23 02:43:40] Found 60 items in Mobile
+[2025-11-23 02:43:42] Data saved with 222 total items.
+[2025-11-23 03:27:34] Looking for file: banggood_data.csv
+[2025-11-23 03:30:01] Looking for file: banggood_data.csv
+[2025-11-23 03:30:29] [INFO] File loaded. Raw Rows: 222
+[2025-11-23 03:30:29] [SUCCESS] Cleaning complete.
+[2025-11-23 03:30:29] [INFO] Output saved to: banggood_cleaned.csv
+[2025-11-23 03:38:00] [INFO] Raw Data Loaded. Rows: 222
+[2025-11-23 03:38:00] [SUCCESS] Cleaning complete.
+[2025-11-23 03:38:00] [INFO] Saved to: banggood_cleaned.csv
+[2025-11-23 03:45:11.392650] Loaded 222 rows.
+[2025-11-23 03:56:15.961121] Loaded 222 rows.
+[2025-11-23 03:56:15.974753] Success! Cleaned data saved to banggood_cleaned.csv
+[2025-11-23 04:00:20.766905] Loaded 222 rows.
+[2025-11-23 04:00:20.786220] Success! Cleaned data saved to banggood_cleaned.csv
