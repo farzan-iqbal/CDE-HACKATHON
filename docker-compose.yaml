@@ -1,0 +1,27 @@
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=banggood_db
+    ports:
+      - "5432:5432"
+
+  airflow:
+    build: .
+    depends_on:
+      - postgres
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./Scripts:/opt/airflow/scripts
+      - ./Data:/opt/airflow/Data
+      - ./Graphs:/opt/airflow/Graphs
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # Postgres connection string for Airflow metadata
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/banggood_db
+    ports:
+      - "8080:8080"
+    command: standalone
