@@ -194,16 +194,25 @@ docker-compose logs -f airflow-scheduler
 
 After a successful pipeline run, the following reports are auto-generated in the `Graphs/` directory:
 
-| Report | Description |
-|---|---|
-| `1_Category_Count.png` | Bar chart showing product count per category |
-| `2_Price_Distribution.png` | Histogram of product price spread |
-| `2_Top_Revenue.png` | Top revenue generating products |
-| `3_Price_PieChart.png` | Pie chart of price range distribution |
-| `4_Price_vs_Rating.png` | Scatter plot comparing price vs product rating |
-| `5_Top_Revenue.png` | Extended top revenue analysis |
+All charts are auto-generated via `scripts/visualize.py` using **Matplotlib** and **Seaborn**.
 
-All charts are generated via scripts in `scripts/visualize.py` using **Matplotlib** and **Seaborn**.
+### 📈 Category Count
+![1_Category_Count](Graphs/1_Category_Count.png)
+
+### 💰 Price Distribution
+![2_Price_Distribution](Graphs/2_Price_Distribution.png)
+
+### 🏆 Top Revenue
+![2_Top_Revenue](Graphs/2_Top_Revenue.png)
+
+### 🥧 Price Pie Chart
+![3_Price_PieChart](Graphs/3_Price_PieChart.png)
+
+### ⭐ Price vs Rating
+![4_Price_vs_Rating](Graphs/4_Price_vs_Rating.png)
+
+### 🏅 Top Revenue (Extended)
+![5_Top_Revenue](Graphs/5_Top_Revenue.png)
 
 ---
 
