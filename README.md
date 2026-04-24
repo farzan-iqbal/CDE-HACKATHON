@@ -83,17 +83,26 @@ Everything runs inside **Docker containers** — no manual environment setup req
 CDE-HACKATHON/
 │
 ├── dags/                        # Airflow DAG definitions
-│   └── banggood_pipeline.py     # Main ETL DAG (Scrape → Clean → Load)
+│   └── banggood_dag.py          # Main ETL DAG (Scrape → Clean → Load)
 │
 ├── scripts/                     # Python scripts for each pipeline stage
-│   ├── scraper.py               # Web scraping logic (Banggood)
-│   ├── transform.py             # Data cleaning & transformation
-│   ├── load.py                  # PostgreSQL data loading
-│   └── visualize.py             # Chart & report generation
+│   ├── scrape_banggood.py       # Web scraping logic (Banggood)
+│   ├── clean_data.py            # Data cleaning & transformation
+│   ├── upload.py                # PostgreSQL data loading
+│   ├── analysis.py              # Data analysis logic
+│   └── sql_analysis.py          # SQL-based analysis queries
 │
 ├── Data/                        # Raw & processed CSV data files
+│   ├── banggood_data.csv        # Raw scraped data
+│   └── banggood_cleaned.csv     # Cleaned & transformed data
 │
 ├── Graphs/                      # Auto-generated visualization outputs
+│   ├── 1_Category_Count.png
+│   ├── 2_Price_Distribution.png
+│   ├── 2_Top_Revenue.png
+│   ├── 3_Price_PieChart.png
+│   ├── 4_Price_vs_Rating.png
+│   └── 5_Top_Revenue.png
 │
 ├── docs/
 │   └── architecture.png         # Pipeline architecture diagram
