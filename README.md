@@ -41,32 +41,7 @@ The entire pipeline runs **automatically every day** via an Airflow DAG, contain
 
 ## 🏗️ Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     AIRFLOW DAG (Daily)                      │
-│                                                              │
-│  ┌──────────┐    ┌──────────┐    ┌──────────┐               │
-│  │ EXTRACT  │───▶│TRANSFORM │───▶│   LOAD   │               │
-│  │          │    │          │    │          │               │
-│  │ Selenium │    │  Pandas  │    │PostgreSQL│               │
-│  │ scrapes  │    │  cleans  │    │ products │               │
-│  │ Banggood │    │  & preps │    │  table   │               │
-│  └──────────┘    └──────────┘    └──────────┘               │
-│       │                               │                      │
-│       ▼                               ▼                      │
-│  banggood_data.csv          ┌──────────────────┐            │
-│                             │    ANALYZE       │            │
-│                             │  SQL Queries     │            │
-│                             │  + Matplotlib    │            │
-│                             │  Visualizations  │            │
-│                             └──────────────────┘            │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Data Flow:**
-```
-Banggood.com → Selenium → Raw CSV → Pandas Cleaning → PostgreSQL → SQL Analysis → Charts
-```
+![Pipeline Architecture](docs/architecture.png)
 
 ---
 
@@ -112,9 +87,7 @@ Banggood.com → Selenium → Raw CSV → Pandas Cleaning → PostgreSQL → SQL
 - Results logged to Airflow task logs for monitoring
 
 ### Stage 5 — Visualize (analysis.py)
-- Generates 2 charts saved to `/Graphs` folder:
-  - Product count per category (bar chart)
-  - Top 5 products by estimated revenue
+- Generates 6 charts saved to `/Graphs` folder covering category distribution, revenue, pricing and ratings
 
 ---
 
@@ -187,7 +160,7 @@ docker-compose down
 CDE-HACKATHON/
 │
 ├── dags/
-│   └── banggood_pipeline.py      # Airflow DAG definition
+│   └── banggood_dag.py           # Airflow DAG definition
 │
 ├── scripts/
 │   ├── scrape_banggood.py        # Stage 1: Web scraping
@@ -200,9 +173,16 @@ CDE-HACKATHON/
 │   ├── banggood_data.csv         # Raw scraped data
 │   └── banggood_cleaned.csv      # Cleaned & transformed data
 │
+├── docs/
+│   └── architecture.png          # Pipeline architecture diagram
+│
 ├── Graphs/
 │   ├── 1_Category_Count.png      # Category distribution chart
-│   └── 2_Top_Revenue.png         # Top revenue products chart
+│   ├── 2_Price_Distribution.png  # Price distribution chart
+│   ├── 2_Top_Revenue.png         # Top revenue products chart
+│   ├── 3_Price_PieChart.png      # Price category pie chart
+│   ├── 4_Price_vs_Rating.png     # Price vs rating scatter
+│   └── 5_Top_Revenue.png         # Top revenue bar chart
 │
 ├── Dockerfile                    # Custom Airflow image
 ├── docker-compose.yaml           # Multi-container setup
@@ -251,10 +231,23 @@ GROUP BY "Price_Category";
 
 ## 📈 Visual Outputs
 
-| Chart | Description |
-|-------|-------------|
-| `1_Category_Count.png` | Bar chart showing product volume per category |
-| `2_Top_Revenue.png` | Horizontal bar chart of top 5 revenue-generating products |
+### Category Distribution
+![Category Count](Graphs/1_Category_Count.png)
+
+### Price Distribution
+![Price Distribution](Graphs/2_Price_Distribution.png)
+
+### Top Revenue Products
+![Top Revenue](Graphs/2_Top_Revenue.png)
+
+### Price Category Breakdown
+![Price Pie Chart](Graphs/3_Price_PieChart.png)
+
+### Price vs Rating
+![Price vs Rating](Graphs/4_Price_vs_Rating.png)
+
+### Top 5 Revenue Leaders
+![Top 5 Revenue](Graphs/5_Top_Revenue.png)
 
 ---
 
@@ -266,15 +259,3 @@ GROUP BY "Price_Category";
 - Connecting Python to **PostgreSQL** using SQLAlchemy
 - Using **Docker Compose** to manage multi-service applications
 - Designing pipelines with **proper logging and error handling**
-
----
-
-## 👤 Author
-
-**Farzan Iqbal**
-- GitHub: [@farzan-iqbal](https://github.com/farzan-iqbal)
-- LinkedIn: [Add your LinkedIn here]
-
----
-
-> ⭐ If you found this project useful, consider giving it a star!
