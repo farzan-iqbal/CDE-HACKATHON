@@ -1,79 +1,183 @@
 # 🛒 Banggood E-Commerce Data Pipeline
 
-![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python&logoColor=white)
-![Apache Airflow](https://img.shields.io/badge/Apache%20Airflow-2.x-017CEE?logo=apache-airflow&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-336791?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)
-![ETL](https://img.shields.io/badge/Pipeline-ETL-orange)
-![License](https://img.shields.io/badge/License-MIT-green)
+![Python](https://img.shields.io/badge/Python-3.9-blue?logo=python)
+![Apache Airflow](https://img.shields.io/badge/Apache%20Airflow-2.x-green?logo=apacheairflow)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13-blue?logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)
+![Selenium](https://img.shields.io/badge/Selenium-Web%20Scraping-43B02A?logo=selenium)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-> A fully containerized, end-to-end **ETL (Extract → Transform → Load)** data pipeline that scrapes product data from **Banggood**, orchestrates workflows via **Apache Airflow**, stores structured data in **PostgreSQL**, and generates automated analytical reports using **Matplotlib & Seaborn**.
+> A fully automated, end-to-end ETL data pipeline that scrapes real product data from Banggood.com, cleans and transforms it, loads it into PostgreSQL, runs SQL analytics, and generates visual business insights — all orchestrated by Apache Airflow inside Docker.
 
 ---
 
 ## 📌 Table of Contents
 
-- [Overview](#-overview)
+- [Project Overview](#-project-overview)
 - [Architecture](#-architecture)
 - [Tech Stack](#-tech-stack)
+- [Pipeline Stages](#-pipeline-stages)
+- [Setup Guide](#-setup-guide)
 - [Project Structure](#-project-structure)
-- [Pipeline Workflow](#-pipeline-workflow)
-- [Setup & Installation](#-setup--installation)
-- [Running the Pipeline](#-running-the-pipeline)
-- [Generated Insights](#-generated-insights)
-- [Contributing](#-contributing)
+- [SQL Analytics](#-sql-analytics)
+- [Visual Outputs](#-visual-outputs)
+- [Key Learnings](#-key-learnings)
 
 ---
 
-## 🔍 Overview
+## 🎯 Project Overview
 
-This project was built as part of the **CDE Hackathon** and demonstrates a production-style data engineering pipeline. The pipeline:
+This project was built as part of a **Data Engineering Hackathon**. The goal was to design a production-style data pipeline from scratch that could:
 
-1. **Scrapes** raw product data (names, categories, prices) from Banggood e-commerce using a custom web scraper
-2. **Orchestrates** all tasks (scrape → clean → load) via Apache Airflow DAGs
-3. **Stores** cleaned, structured data in a PostgreSQL database for SQL-based analysis
-4. **Visualizes** key business insights through automated chart generation
+- **Extract** real product listings from 5 categories on Banggood.com using Selenium
+- **Transform** raw messy data into clean, analysis-ready format
+- **Load** structured data into a PostgreSQL database
+- **Analyze** data using SQL aggregation queries
+- **Visualize** business insights using Python charts
 
-Everything runs inside **Docker containers** — no manual environment setup required.
+The entire pipeline runs **automatically every day** via an Airflow DAG, containerized with Docker for portability.
 
 ---
 
 ## 🏗️ Architecture
 
-![Pipeline Architecture](docs/architecture.png)
-
 ```
-┌─────────────────┐     ┌──────────────────────────────────────────┐     ┌──────────────────────┐
-│                 │     │        CONTAINERIZED PLATFORM (DOCKER)   │     │   INSIGHTS &         │
-│   DATA SOURCE   │────▶│                                          │────▶│   VISUALIZATION      │
-│                 │     │  ┌─────────────────────────────────────┐ │     │                      │
-│  Banggood.com   │     │  │  APACHE AIRFLOW (Orchestration)     │ │     │  Matplotlib / Seaborn│
-│  (Web Scraper)  │     │  │  • DAG Scheduler                    │ │     │                      │
-│                 │     │  │  • Tasks: Scrape → Clean → Load      │ │     │  Reports:            │
-│  Raw Product    │     │  └──────────────┬──────────────────────┘ │     │  • Category Count    │
-│  Data Scraped   │     │                 │ Load Cleaned Data       │     │  • Price Analysis    │
-└─────────────────┘     │  ┌──────────────▼──────────────────────┐ │     │  • Distribution      │
-                        │  │  POSTGRESQL (Database)               │ │     └──────────────────────┘
-                        │  │  • Structured Data Storage           │ │
-                        │  │  • CSVs & SQL Analysis               │ │
-                        │  └─────────────────────────────────────┘ │
-                        │                                          │
-                        │  🐳 Containerized via Docker Image       │
-                        └──────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     AIRFLOW DAG (Daily)                      │
+│                                                              │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐               │
+│  │ EXTRACT  │───▶│TRANSFORM │───▶│   LOAD   │               │
+│  │          │    │          │    │          │               │
+│  │ Selenium │    │  Pandas  │    │PostgreSQL│               │
+│  │ scrapes  │    │  cleans  │    │ products │               │
+│  │ Banggood │    │  & preps │    │  table   │               │
+│  └──────────┘    └──────────┘    └──────────┘               │
+│       │                               │                      │
+│       ▼                               ▼                      │
+│  banggood_data.csv          ┌──────────────────┐            │
+│                             │    ANALYZE       │            │
+│                             │  SQL Queries     │            │
+│                             │  + Matplotlib    │            │
+│                             │  Visualizations  │            │
+│                             └──────────────────┘            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Data Flow:**
+```
+Banggood.com → Selenium → Raw CSV → Pandas Cleaning → PostgreSQL → SQL Analysis → Charts
 ```
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| **Scraping** | Python + Requests/BeautifulSoup | Extract raw product data from Banggood |
-| **Orchestration** | Apache Airflow 2.x | DAG-based task scheduling & management |
-| **Database** | PostgreSQL 13 | Store cleaned, structured product data |
-| **Containerization** | Docker + Docker Compose | Isolated, reproducible runtime environment |
-| **Visualization** | Matplotlib + Seaborn | Auto-generate analytical reports & charts |
-| **Language** | Python 3.10 | Core pipeline logic |
+| Tool | Purpose |
+|------|---------|
+| **Python 3.9** | Core scripting language |
+| **Apache Airflow** | Pipeline orchestration & scheduling |
+| **Selenium + BeautifulSoup** | Web scraping (headless Chrome) |
+| **Pandas** | Data cleaning & transformation |
+| **PostgreSQL 13** | Relational data storage |
+| **SQLAlchemy** | Database ORM & connection |
+| **Matplotlib + Seaborn** | Data visualization |
+| **Docker + Docker Compose** | Containerization & deployment |
+
+---
+
+## 🔄 Pipeline Stages
+
+### Stage 1 — Extract (scrape_banggood.py)
+- Launches headless Chrome using Selenium inside Docker
+- Scrapes **5 product categories**: Automobiles, Electronics, Lights, Sports, Mobile
+- Handles lazy loading via scroll simulation
+- Extracts: Product Name, Price, Category, URL
+- Saves raw data to `Data/banggood_data.csv`
+
+### Stage 2 — Transform (clean_data.py)
+- Removes rows with missing Name or Price
+- Cleans price strings using Regex: `re.sub(r'[^0-9.]', '', x)` — handles formats like `US$19.99`
+- Adds business logic columns:
+  - `Price_Category` → Budget / Standard / Premium
+  - `Est_Revenue` → Price × Reviews
+- Saves clean data to `Data/banggood_cleaned.csv`
+
+### Stage 3 — Load (upload.py)
+- Connects to PostgreSQL using SQLAlchemy
+- Uploads cleaned DataFrame to `products` table
+- Uses `if_exists='replace'` for fresh daily loads
+
+### Stage 4 — Analyze (sql_analysis.py)
+- Runs 5 SQL aggregation queries directly against PostgreSQL
+- Results logged to Airflow task logs for monitoring
+
+### Stage 5 — Visualize (analysis.py)
+- Generates 2 charts saved to `/Graphs` folder:
+  - Product count per category (bar chart)
+  - Top 5 products by estimated revenue
+
+---
+
+## ⚙️ Setup Guide
+
+### Prerequisites
+Make sure you have these installed:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Git](https://git-scm.com/)
+
+### Step 1 — Clone the Repository
+```bash
+git clone https://github.com/farzan-iqbal/CDE-HACKATHON.git
+cd CDE-HACKATHON
+```
+
+### Step 2 — Start the Containers
+```bash
+docker-compose up --build
+```
+This will:
+- Build the custom Airflow image with all dependencies
+- Start PostgreSQL on port `5432`
+- Start Airflow on port `8080`
+
+> ⏳ First build takes 3-5 minutes. Wait for `airflow | Listening at: http://0.0.0.0:8080`
+
+### Step 3 — Open Airflow UI
+```
+URL:      http://localhost:8080
+Username: admin
+Password: admin
+```
+
+### Step 4 — Run the Pipeline
+1. Find the DAG named **`banggood_full_pipeline`**
+2. Toggle it **ON** (top left switch)
+3. Click **▶ Trigger DAG** to run manually
+4. Click on the DAG → **Graph View** to watch each task execute
+
+### Step 5 — View Results
+```bash
+# See scraped CSV
+cat Data/banggood_data.csv
+
+# See cleaned CSV
+cat Data/banggood_cleaned.csv
+
+# See generated charts
+ls Graphs/
+```
+
+To check PostgreSQL directly:
+```bash
+docker exec -it <postgres_container_id> psql -U airflow -d banggood_db
+SELECT COUNT(*) FROM products;
+SELECT "Category", COUNT(*) FROM products GROUP BY "Category";
+```
+
+### Step 6 — Stop Containers
+```bash
+docker-compose down
+```
 
 ---
 
@@ -82,183 +186,95 @@ Everything runs inside **Docker containers** — no manual environment setup req
 ```
 CDE-HACKATHON/
 │
-├── dags/                        # Airflow DAG definitions
-│   └── banggood_dag.py          # Main ETL DAG (Scrape → Clean → Load)
+├── dags/
+│   └── banggood_pipeline.py      # Airflow DAG definition
 │
-├── scripts/                     # Python scripts for each pipeline stage
-│   ├── scrape_banggood.py       # Web scraping logic (Banggood)
-│   ├── clean_data.py            # Data cleaning & transformation
-│   ├── upload.py                # PostgreSQL data loading
-│   ├── analysis.py              # Data analysis logic
-│   └── sql_analysis.py          # SQL-based analysis queries
+├── scripts/
+│   ├── scrape_banggood.py        # Stage 1: Web scraping
+│   ├── clean_data.py             # Stage 2: Data cleaning
+│   ├── upload.py                 # Stage 3: PostgreSQL upload
+│   ├── sql_analysis.py           # Stage 4: SQL queries
+│   └── analysis.py               # Stage 5: Visualizations
 │
-├── Data/                        # Raw & processed CSV data files
-│   ├── banggood_data.csv        # Raw scraped data
-│   └── banggood_cleaned.csv     # Cleaned & transformed data
+├── Data/
+│   ├── banggood_data.csv         # Raw scraped data
+│   └── banggood_cleaned.csv      # Cleaned & transformed data
 │
-├── Graphs/                      # Auto-generated visualization outputs
-│   ├── 1_Category_Count.png
-│   ├── 2_Price_Distribution.png
-│   ├── 2_Top_Revenue.png
-│   ├── 3_Price_PieChart.png
-│   ├── 4_Price_vs_Rating.png
-│   └── 5_Top_Revenue.png
+├── Graphs/
+│   ├── 1_Category_Count.png      # Category distribution chart
+│   └── 2_Top_Revenue.png         # Top revenue products chart
 │
-├── docs/
-│   └── architecture.png         # Pipeline architecture diagram
-│
-├── Dockerfile                   # Custom Airflow Docker image
-├── docker-compose.yaml          # Multi-service container configuration
-├── Requirements.txt             # Python dependencies
+├── Dockerfile                    # Custom Airflow image
+├── docker-compose.yaml           # Multi-container setup
+├── Requirements.txt              # Python dependencies
 └── README.md
 ```
 
 ---
 
-## 🔄 Pipeline Workflow
+## 📊 SQL Analytics
 
-The Airflow DAG executes the following tasks in sequence:
+Five business queries run automatically against PostgreSQL:
 
-```
-[scrape_banggood] ──▶ [clean_data] ──▶ [load_to_postgres] ──▶ [generate_reports]
-```
+```sql
+-- 1. Product count per category
+SELECT "Category", COUNT(*) as total_items
+FROM products
+GROUP BY "Category"
+ORDER BY total_items DESC;
 
-**Stage 1 — Extract:** The scraper collects product names, categories, prices, and ratings from Banggood and saves raw output as CSV.
+-- 2. Average price per category
+SELECT "Category", ROUND(AVG("Price")::numeric, 2) as avg_price
+FROM products
+GROUP BY "Category"
+ORDER BY avg_price DESC;
 
-**Stage 2 — Transform:** Raw data is cleaned — nulls removed, data types normalized, duplicates dropped, price fields standardized.
+-- 3. Top 5 products by estimated revenue
+SELECT "Name", "Price", "Est_Revenue"
+FROM products
+ORDER BY "Est_Revenue" DESC
+LIMIT 5;
 
-**Stage 3 — Load:** Cleaned data is loaded into PostgreSQL tables. SQL queries run for aggregated analysis.
+-- 4. Average rating per category
+SELECT "Category", ROUND(AVG("Rating")::numeric, 1) as avg_rating
+FROM products
+GROUP BY "Category"
+ORDER BY avg_rating DESC;
 
-**Stage 4 — Visualize:** Matplotlib/Seaborn scripts auto-generate charts (category distributions, price histograms, etc.) saved to `Graphs/`.
-
----
-
-## ⚙️ Setup & Installation
-
-### Prerequisites
-
-Make sure you have the following installed:
-
-- [Docker](https://www.docker.com/get-started) (v20+)
-- [Docker Compose](https://docs.docker.com/compose/) (v2+)
-- [Git](https://git-scm.com/)
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/farzan-iqbal/CDE-HACKATHON.git
-cd CDE-HACKATHON
-```
-
-### 2. Environment Setup
-
-No `.env` configuration needed — all defaults are set in `docker-compose.yaml`.
-
-> ⚠️ If you want to customize PostgreSQL credentials, edit the environment section in `docker-compose.yaml` before proceeding.
-
-### 3. Build & Start Containers
-
-```bash
-docker-compose up --build
-```
-
-This will spin up:
-- **Airflow Webserver** → `http://localhost:8080`
-- **Airflow Scheduler**
-- **PostgreSQL Database** → port `5432`
-
-Default Airflow credentials:
-```
-Username: airflow
-Password: airflow
+-- 5. Price category distribution
+SELECT "Price_Category", COUNT(*) as count
+FROM products
+GROUP BY "Price_Category";
 ```
 
 ---
 
-## ▶️ Running the Pipeline
+## 📈 Visual Outputs
 
-### Via Airflow UI
-
-1. Open `http://localhost:8080` in your browser
-2. Login with the credentials above
-3. Locate the DAG: **`banggood_etl_pipeline`**
-4. Toggle it **ON** and trigger manually via the ▶️ button
-
-### Via CLI
-
-```bash
-# Trigger DAG manually from command line
-docker-compose exec airflow-scheduler airflow dags trigger banggood_etl_pipeline
-```
-
-### Check Logs
-
-```bash
-docker-compose logs -f airflow-scheduler
-```
+| Chart | Description |
+|-------|-------------|
+| `1_Category_Count.png` | Bar chart showing product volume per category |
+| `2_Top_Revenue.png` | Horizontal bar chart of top 5 revenue-generating products |
 
 ---
 
-## 📊 Generated Insights
+## 💡 Key Learnings
 
-After a successful pipeline run, the following reports are auto-generated in the `Graphs/` directory:
-
-All charts are auto-generated via `scripts/visualize.py` using **Matplotlib** and **Seaborn**.
-
-### 📈 Category Count
-![1_Category_Count](Graphs/1_Category_Count.png)
-
-### 💰 Price Distribution
-![2_Price_Distribution](Graphs/2_Price_Distribution.png)
-
-### 🏆 Top Revenue
-![2_Top_Revenue](Graphs/2_Top_Revenue.png)
-
-### 🥧 Price Pie Chart
-![3_Price_PieChart](Graphs/3_Price_PieChart.png)
-
-### ⭐ Price vs Rating
-![4_Price_vs_Rating](Graphs/4_Price_vs_Rating.png)
-
-### 🏅 Top Revenue (Extended)
-![5_Top_Revenue](Graphs/5_Top_Revenue.png)
+- Orchestrating multi-step pipelines with **Apache Airflow DAGs**
+- Running **headless Selenium** inside a Docker container
+- **Regex-based data cleaning** for inconsistent price formats
+- Connecting Python to **PostgreSQL** using SQLAlchemy
+- Using **Docker Compose** to manage multi-service applications
+- Designing pipelines with **proper logging and error handling**
 
 ---
 
-## 🛑 Stopping the Pipeline
-
-```bash
-docker-compose down
-```
-
-To also remove volumes (wipes PostgreSQL data):
-
-```bash
-docker-compose down -v
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! To contribute:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature`
-3. Commit your changes: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Open a Pull Request
-
----
-
-## 👨‍💻 Author
+## 👤 Author
 
 **Farzan Iqbal**
-Data Engineer | CDE Hackathon Participant
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/farzan-iqbal)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?logo=github)](https://github.com/farzan-iqbal)
+- GitHub: [@farzan-iqbal](https://github.com/farzan-iqbal)
+- LinkedIn: [Add your LinkedIn here]
 
 ---
 
-<p align="center">Built with ❤️ using Python, Airflow, PostgreSQL & Docker</p>
+> ⭐ If you found this project useful, consider giving it a star!
